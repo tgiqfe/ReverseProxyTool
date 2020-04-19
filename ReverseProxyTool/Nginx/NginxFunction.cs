@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ReverseProxyTool.Nginx
 {
-    class NginxFunction
+    public class NginxFunction
     {
         /// <summary>
         /// Nginxプロセス開始
