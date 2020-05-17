@@ -9,14 +9,17 @@ namespace ReverseProxyTool.Nginx
 {
     public class NginxFunction
     {
+        private static NginxPath nginxPath = null;
+        private static NginxCommand command = null;
+
         /// <summary>
         /// Nginxプロセス開始
         /// </summary>
         public static void StartServer(
             int httpPort, int httpsPort, string crtFile, string keyFile, string transfer, bool isHttpOnly, bool isHttpsOnly)
         {
-            NginxPath nginxPath = new NginxPath(Item.TOOLS_DIRECTORY);
-            NginxCommand command = new NginxCommand(nginxPath);
+            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            if (command == null) { command = new NginxCommand(nginxPath); }
 
             //  設定ファイルをセット
             NginxConfig config = new NginxConfig();
@@ -29,10 +32,6 @@ namespace ReverseProxyTool.Nginx
                 transfer;
             if (isHttpOnly) { config.http.server_https = null; }
             if (isHttpsOnly) { config.http.server_http = null; }
-
-            //config.error_log = string.Format("'{0}/error.log' {1}", nginxPath.Logs.Replace("\\", "/"), ErrorLevel.notice);
-            //config.pid = string.Format("'{0}/nginx.pid'", nginxPath.Logs.Replace("\\", "/"));
-            //config.http.access_log = string.Format("'{0}/access.log' main", nginxPath.Logs.Replace("\\", "/"));
 
             if (Directory.Exists(nginxPath.ConfDir) && !Directory.Exists(nginxPath.ConfDir_def))
             {
@@ -59,8 +58,8 @@ namespace ReverseProxyTool.Nginx
         /// </summary>
         public static void QuitServer()
         {
-            NginxPath nginxPath = new NginxPath(Item.TOOLS_DIRECTORY);
-            NginxCommand command = new NginxCommand(nginxPath, false);
+            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            if (command == null) { command = new NginxCommand(nginxPath); }
 
             command.Quit().Wait();
         }
@@ -70,8 +69,8 @@ namespace ReverseProxyTool.Nginx
         /// </summary>
         public static void StopServer()
         {
-            NginxPath nginxPath = new NginxPath(Item.TOOLS_DIRECTORY);
-            NginxCommand command = new NginxCommand(nginxPath, false);
+            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            if (command == null) { command = new NginxCommand(nginxPath); }
 
             command.Stop().Wait();
         }
