@@ -18,10 +18,6 @@ namespace ReverseProxyTool.Nginx
         private string _Conf = null;
         private string _MimeTypes = null;
 
-
-        private string _CertFile = null;
-        private string _KeyFile = null;
-
         public string Base { get { return this._Base; } }
         public string Zip
         {

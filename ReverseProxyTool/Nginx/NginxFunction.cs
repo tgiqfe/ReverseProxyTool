@@ -54,6 +54,56 @@ namespace ReverseProxyTool.Nginx
         }
 
         /// <summary>
+        /// 非同期でNginxプロセスを開始
+        /// ※同期実行する場合と比べて、最後の command.Start().Wait() が、awaitするかどうかしか違いが無いので、どうにか処理共通化ができるとベター
+        /// </summary>
+        /// <param name="httpPort"></param>
+        /// <param name="httpsPort"></param>
+        /// <param name="crtFile"></param>
+        /// <param name="keyFile"></param>
+        /// <param name="transfer"></param>
+        /// <param name="isHttpOnly"></param>
+        /// <param name="isHttpsOnly"></param>
+        /// <returns></returns>
+        public static async Task StartServerAsync(
+            int httpPort, int httpsPort, string crtFile, string keyFile, string transfer, bool isHttpOnly, bool isHttpsOnly)
+        {
+            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            if (command == null) { command = new NginxCommand(nginxPath); }
+
+            //  設定ファイルをセット
+            NginxConfig config = new NginxConfig();
+            config.http.server_http.listen = httpPort.ToString();
+            config.http.server_https.listen = string.Format("{0} ssl", httpsPort);
+            config.http.server_https.ssl_certificate = Path.GetFullPath(crtFile).Replace("\\", "/");
+            config.http.server_https.ssl_certificate_key = Path.GetFullPath(keyFile).Replace("\\", "/");
+            config.http.upstream.server = transfer.Contains("://") ?
+                transfer.Substring(transfer.IndexOf("://") + 3) :
+                transfer;
+            if (isHttpOnly) { config.http.server_https = null; }
+            if (isHttpsOnly) { config.http.server_http = null; }
+
+            if (Directory.Exists(nginxPath.ConfDir) && !Directory.Exists(nginxPath.ConfDir_def))
+            {
+                Directory.Move(nginxPath.ConfDir, nginxPath.ConfDir_def);
+                Directory.CreateDirectory(nginxPath.ConfDir);
+            }
+            using (StreamWriter sw = new StreamWriter(nginxPath.Conf, false, new UTF8Encoding(false)))
+            {
+                sw.WriteLine(config.GetConf());
+            }
+
+            //  Mime設定ファイルをセット
+            MimeTypes mime = new MimeTypes();
+            using (StreamWriter sw = new StreamWriter(nginxPath.MimeTypes, false, new UTF8Encoding(false)))
+            {
+                sw.WriteLine(mime.GetConf());
+            }
+
+            await command.Start();
+        }
+
+        /// <summary>
         /// Nginxプロセス終了 (クライアント通信完了待ち)
         /// </summary>
         public static void QuitServer()
