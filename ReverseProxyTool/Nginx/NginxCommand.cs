@@ -12,14 +12,18 @@ namespace ReverseProxyTool.Nginx
 {
     class NginxCommand
     {
-        private NginxPath _nginxPath = null;
+        //private NginxPath _nginxPath = null;
 
         public NginxCommand() { }
-        public NginxCommand(NginxPath nginxPath) : this(nginxPath, true) { }
+        /*
+        public NginxCommand(NginxPath nginxPath)
+        {
+            this._nginxPath = nginxPath;
+        }
+        */
+        /*
         public NginxCommand(NginxPath nginxPath, bool isExpand)
         {
-            //  元々アセンブリのバージョンが同じ場合は埋め込みリソースの再展開は行わないので、
-            //  isExpandパラメータは保険用
             this._nginxPath = nginxPath;
 
             //  埋め込みリソースを展開
@@ -32,6 +36,7 @@ namespace ReverseProxyTool.Nginx
                 }
             }
         }
+        */
 
         /// <summary>
         /// Nginxコマンドを実行する為のプライベートメソッド
@@ -41,9 +46,9 @@ namespace ReverseProxyTool.Nginx
         {
             using (Process proc = new Process())
             {
-                proc.StartInfo.FileName = _nginxPath.Exe;
+                proc.StartInfo.FileName = Item.NginxPath.Exe;
                 proc.StartInfo.Arguments = arguments;
-                proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(_nginxPath.Exe);
+                proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(Item.NginxPath.Exe);
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.RedirectStandardOutput = true;
@@ -67,9 +72,9 @@ namespace ReverseProxyTool.Nginx
         {
             using (Process proc = new Process())
             {
-                proc.StartInfo.FileName = _nginxPath.Exe;
+                proc.StartInfo.FileName = Item.NginxPath.Exe;
                 proc.StartInfo.Arguments = arguments;
-                proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(_nginxPath.Exe);
+                proc.StartInfo.WorkingDirectory = Path.GetDirectoryName(Item.NginxPath.Exe);
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.CreateNoWindow = true;
                 proc.StartInfo.RedirectStandardOutput = true;
@@ -93,7 +98,7 @@ namespace ReverseProxyTool.Nginx
             {
                 Run(string.Format(
                     "-c \"{0}\"",
-                    _nginxPath.Conf));
+                    Item.NginxPath.Conf));
             });
         }
 

@@ -4,13 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.IO.Compression;
 
 namespace ReverseProxyTool.Nginx
 {
     public class NginxFunction
     {
-        private static NginxPath nginxPath = null;
         private static NginxCommand command = null;
+
+        /// <summary>
+        /// 初期実行時処理
+        /// </summary>
+        private static void Init()
+        {
+            if (Item.NginxPath == null)
+            {
+                //nginxPath = new NginxPath(Item.TOOLS_DIRECTORY);
+                Item.NginxPath = new NginxPath(Item.TOOLS_DIRECTORY);
+            }
+            if (command == null)
+            {
+                //command = new NginxCommand(nginxPath);
+                command = new NginxCommand();
+            }
+
+            Function.ExpandEmbeddedResource(Item.NginxPath.Base);
+            if (!Directory.Exists(Item.NginxPath.Dir))
+            {
+                ZipFile.ExtractToDirectory(Item.NginxPath.Zip, Item.NginxPath.Dir);
+            }
+        }
 
         /// <summary>
         /// Nginxプロセス開始
@@ -18,8 +41,9 @@ namespace ReverseProxyTool.Nginx
         public static void StartServer(
             int httpPort, int httpsPort, string crtFile, string keyFile, string transfer, bool isHttpOnly, bool isHttpsOnly)
         {
-            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
-            if (command == null) { command = new NginxCommand(nginxPath); }
+            Init();
+            //if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            //if (command == null) { command = new NginxCommand(nginxPath); }
 
             //  設定ファイルをセット
             NginxConfig config = new NginxConfig();
@@ -33,19 +57,19 @@ namespace ReverseProxyTool.Nginx
             if (isHttpOnly) { config.http.server_https = null; }
             if (isHttpsOnly) { config.http.server_http = null; }
 
-            if (Directory.Exists(nginxPath.ConfDir) && !Directory.Exists(nginxPath.ConfDir_def))
+            if (Directory.Exists(Item.NginxPath.ConfDir) && !Directory.Exists(Item.NginxPath.ConfDir_def))
             {
-                Directory.Move(nginxPath.ConfDir, nginxPath.ConfDir_def);
-                Directory.CreateDirectory(nginxPath.ConfDir);
+                Directory.Move(Item.NginxPath.ConfDir, Item.NginxPath.ConfDir_def);
+                Directory.CreateDirectory(Item.NginxPath.ConfDir);
             }
-            using (StreamWriter sw = new StreamWriter(nginxPath.Conf, false, new UTF8Encoding(false)))
+            using (StreamWriter sw = new StreamWriter(Item.NginxPath.Conf, false, new UTF8Encoding(false)))
             {
                 sw.WriteLine(config.GetConf());
             }
 
             //  Mime設定ファイルをセット
             MimeTypes mime = new MimeTypes();
-            using (StreamWriter sw = new StreamWriter(nginxPath.MimeTypes, false, new UTF8Encoding(false)))
+            using (StreamWriter sw = new StreamWriter(Item.NginxPath.MimeTypes, false, new UTF8Encoding(false)))
             {
                 sw.WriteLine(mime.GetConf());
             }
@@ -68,8 +92,9 @@ namespace ReverseProxyTool.Nginx
         public static async Task StartServerAsync(
             int httpPort, int httpsPort, string crtFile, string keyFile, string transfer, bool isHttpOnly, bool isHttpsOnly)
         {
-            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
-            if (command == null) { command = new NginxCommand(nginxPath); }
+            Init();
+            //if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            //if (command == null) { command = new NginxCommand(nginxPath); }
 
             //  設定ファイルをセット
             NginxConfig config = new NginxConfig();
@@ -83,19 +108,19 @@ namespace ReverseProxyTool.Nginx
             if (isHttpOnly) { config.http.server_https = null; }
             if (isHttpsOnly) { config.http.server_http = null; }
 
-            if (Directory.Exists(nginxPath.ConfDir) && !Directory.Exists(nginxPath.ConfDir_def))
+            if (Directory.Exists(Item.NginxPath.ConfDir) && !Directory.Exists(Item.NginxPath.ConfDir_def))
             {
-                Directory.Move(nginxPath.ConfDir, nginxPath.ConfDir_def);
-                Directory.CreateDirectory(nginxPath.ConfDir);
+                Directory.Move(Item.NginxPath.ConfDir, Item.NginxPath.ConfDir_def);
+                Directory.CreateDirectory(Item.NginxPath.ConfDir);
             }
-            using (StreamWriter sw = new StreamWriter(nginxPath.Conf, false, new UTF8Encoding(false)))
+            using (StreamWriter sw = new StreamWriter(Item.NginxPath.Conf, false, new UTF8Encoding(false)))
             {
                 sw.WriteLine(config.GetConf());
             }
 
             //  Mime設定ファイルをセット
             MimeTypes mime = new MimeTypes();
-            using (StreamWriter sw = new StreamWriter(nginxPath.MimeTypes, false, new UTF8Encoding(false)))
+            using (StreamWriter sw = new StreamWriter(Item.NginxPath.MimeTypes, false, new UTF8Encoding(false)))
             {
                 sw.WriteLine(mime.GetConf());
             }
@@ -108,8 +133,9 @@ namespace ReverseProxyTool.Nginx
         /// </summary>
         public static void QuitServer()
         {
-            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
-            if (command == null) { command = new NginxCommand(nginxPath); }
+            Init();
+            //if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            //if (command == null) { command = new NginxCommand(nginxPath); }
 
             command.Quit().Wait();
         }
@@ -119,8 +145,9 @@ namespace ReverseProxyTool.Nginx
         /// </summary>
         public static void StopServer()
         {
-            if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
-            if (command == null) { command = new NginxCommand(nginxPath); }
+            Init();
+            //if (nginxPath == null) { nginxPath = new NginxPath(Item.TOOLS_DIRECTORY); }
+            //if (command == null) { command = new NginxCommand(nginxPath); }
 
             command.Stop().Wait();
         }
