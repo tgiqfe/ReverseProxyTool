@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="Cmdlet\StartReverseProxyServer.cs" />
     <Compile Include="Cmdlet\StopReverseProxyServer.cs" />
-    <Compile Include="Cmdlet\TestProcess.cs" />
+    <Compile Include="Cmdlet\GetNginxConfig.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Nginx\DirectiveParameterAttribute.cs" />

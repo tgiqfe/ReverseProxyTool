@@ -123,9 +123,7 @@ namespace ReverseProxyTool.Nginx
             public string ssl_ciphers { get; set; } = "ECDHE+RSAGCM:ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:!EXPORT:!DES:!3DES:!MD5:!DSS";
             [DirectiveParameter("ignore_invalid_headers")]
             public string ignore_invalid_headers { get; set; } = "off";
-            [DirectiveParameter("real_ip_header")]
-            public string real_ip_header { get; set; } = "X-Forwarded-For";
-
+            
             //  その他HTTPサーバ関連設定
             [DirectiveParameter("client_max_body_size")]
             public string client_max_body_size { get; set; } = "100M";
@@ -133,6 +131,8 @@ namespace ReverseProxyTool.Nginx
             public string charset { get; set; }
             [DirectiveParameter("access_log")]
             public string access_log { get; set; }
+            [DirectiveParameter("real_ip_header")]
+            public string real_ip_header { get; set; } = "X-Forwarded-For";
 
             [DirectiveParameter("location", "/")]
             public Directive_location location { get; set; } = new Directive_location();
@@ -153,6 +153,8 @@ namespace ReverseProxyTool.Nginx
             public string charset { get; set; }
             [DirectiveParameter("access_log")]
             public string access_log { get; set; }
+            [DirectiveParameter("real_ip_header")]
+            public string real_ip_header { get; set; } = "X-Forwarded-For";
 
             [DirectiveParameter("location", "/")]
             public Directive_location location { get; set; } = new Directive_location();
@@ -178,22 +180,22 @@ namespace ReverseProxyTool.Nginx
             public string proxy_set_header_2 { get; set; } = "Upgrade $http_upgrade";
             [DirectiveParameter("proxy_set_header")]
             public string proxy_set_header_3 { get; set; } = "Connection $connection_upgrade";
-
-            /*
             [DirectiveParameter("proxy_set_header")]
             public string proxy_set_header_4 { get; set; } = "X-Real-IP $remote_addr";
             [DirectiveParameter("proxy_set_header")]
-            public string proxy_set_header_5 { get; set; } = "X-Forwarded-Host $host";
+            //public string proxy_set_header_5 { get; set; } = "X-Forwarded-For $remote_addr";
+            public string proxy_set_header_5 { get; set; } = "X-Forwarded-For $proxy_add_x_forwarded_for";
+
+            /*
             [DirectiveParameter("proxy_set_header")]
-            public string proxy_set_header_6 { get; set; } = "X-Forwarded-Server $host";
+            public string proxy_set_header_6 { get; set; } = "X-Forwarded-Host $host";
             [DirectiveParameter("proxy_set_header")]
-            public string proxy_set_header_7 { get; set; } = "X-Forwarded-Proto $scheme";
+            public string proxy_set_header_7 { get; set; } = "X-Forwarded-Server $host";
+            [DirectiveParameter("proxy_set_header")]
+            public string proxy_set_header_8 { get; set; } = "X-Forwarded-Proto $scheme";
             //public string proxy_set_header_4 { get; set; } = "X-Forwarded-Proto $http_x_forwarded_proto";
             [DirectiveParameter("proxy_set_header")]
-            public string proxy_set_header_8 { get; set; } = "X-Forwarded-Port $server_port";
-            [DirectiveParameter("proxy_set_header")]
-            public string proxy_set_header_9 { get; set; } = "X-Forwarded-For $proxy_add_x_forwarded_for";
-            //public string proxy_set_header_6 { get; set; } = "X-Forwarded-For $remote_addr";
+            public string proxy_set_header_9 { get; set; } = "X-Forwarded-Port $server_port";
             [DirectiveParameter("proxy_set_header")]
             public string proxy_set_header_10 { get; set; } = "X-Frame-Options SAMEORIGIN";
             [DirectiveParameter("proxy_buffering")]

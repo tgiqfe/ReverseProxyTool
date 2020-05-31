@@ -8,8 +8,8 @@ using ReverseProxyTool.Nginx;
 
 namespace ReverseProxyTool.Cmdlet
 {
-    [Cmdlet(VerbsDiagnostic.Test, "Process")]
-    public class TestProcess : PSCmdlet
+    [Cmdlet(VerbsCommon.Get, "NginxConfig")]
+    public class GetNginxConfig : PSCmdlet
     {
         protected override void ProcessRecord()
         {
